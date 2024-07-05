@@ -19,6 +19,7 @@ class Settings(BaseSettings):
     # Mongodb
     MONGO_CONNECTION_STRING: str = os.getenv("MONGO_CONNECTION_STRING")
     MONGO_DATABASE_NAME: str = os.getenv("MONGO_DATABASE_NAME")
+    MONGO_RAW_COLLECTION: str = os.getenv("MONGO_RAW_COLLECTION")
 
 
 settings = Settings()
