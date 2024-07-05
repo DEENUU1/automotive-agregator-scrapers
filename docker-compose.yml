@@ -1,0 +1,52 @@
+version: "3"
+
+services:
+    web:
+        hostname: web
+        build:
+            context: .
+            dockerfile: Dockerfile
+        container_name: web
+        command: uvicorn app:app --host 0.0.0.0 --port 8001
+        volumes:
+          - ./app:/app
+        ports:
+            - "8001:8001"
+        env_file:
+            - .env
+        restart: always
+
+    redis:
+        image: redis:latest
+        ports:
+            - "6379:6379"
+
+    celery_worker:
+        container_name: "celery_worker"
+        build:
+            context: .
+            dockerfile: Dockerfile
+        command: celery -A tasks.celery_worker worker --pool=solo --loglevel=info
+        volumes:
+            - ./app:/app
+        depends_on:
+            - redis
+            - web
+        restart: always
+        env_file:
+            - .env
+
+    celery_beat:
+        container_name: "celery_beat"
+        build:
+            context: .
+            dockerfile: Dockerfile
+        command: celery -A tasks.celery_worker beat --loglevel=info
+        volumes:
+            - ./app:/app
+        depends_on:
+            - redis
+            - web
+        restart: always
+        env_file:
+            - .env
