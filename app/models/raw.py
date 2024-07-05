@@ -6,6 +6,7 @@ from typing import Optional
 
 class Raw(BaseModel):
     id: PyObjectId = Field(default_factory=PyObjectId, alias='_id')
+    site: Optional[str] = None
     category: Optional[str] = None
     raw_text: Optional[str] = None
     raw_json: Optional[dict] = None

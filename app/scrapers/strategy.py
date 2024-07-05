@@ -1,10 +1,17 @@
 from abc import ABC, abstractmethod
+from typing import Dict
+from service.raw_service import create_object
 
 
 class ScraperStrategy(ABC):
     @abstractmethod
     def run(self):
         pass
+
+    @staticmethod
+    async def save_raw(raw: Dict):
+        result = await create_object(raw)
+        return result
 
 
 class Context:
