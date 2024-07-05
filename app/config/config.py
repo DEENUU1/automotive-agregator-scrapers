@@ -17,6 +17,8 @@ class Settings(BaseSettings):
     CELERY_BACKEND: str | None = os.getenv("CELERY_BACKEND")
 
     # Mongodb
+    MONGO_CONNECTION_STRING: str = os.getenv("MONGO_CONNECTION_STRING")
+    MONGO_DATABASE_NAME: str = os.getenv("MONGO_DATABASE_NAME")
 
 
 settings = Settings()
