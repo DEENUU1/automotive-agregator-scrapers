@@ -1,7 +1,10 @@
+from typing import List, Optional
+
 from models.raw import Raw
 from parsers.strategy import ParserStrategy
 import logging
 from bs4 import BeautifulSoup
+from models.offer import Offer
 
 logger = logging.getLogger(__name__)
 
@@ -19,7 +22,13 @@ class OtomotoParser(ParserStrategy):
             logger.error(f"Error while creating soup: {e}")
             return None
 
-    def run(self, data: Raw):
+    @staticmethod
+    def _change_image_size(image_url: Optional[str] = None) -> Optional[str]:
+        if not image_url:
+            return None
+        return image_url.replace("320x240", "1500x1500")
+
+    def run(self, data: Raw) -> Optional[List[Offer]]:
         soup = self._get_soup(data.raw_text)
         if not soup:
             return
@@ -56,18 +65,21 @@ class OtomotoParser(ParserStrategy):
 
                     price = offer.find("h3", class_="e1vic7eh16 ooa-1n2paoq er34gjf0")
 
-                    parsed_data = {
-                        "title": title.text.strip(),
-                        "offer_url": offer_url["href"] if offer_url else None,
-                        "description": description.text.strip() if description else None,
-                        "mileage": mileage.text.strip() if mileage else None,
-                        "fuel_type": fuel_type.text.strip() if fuel_type else None,
-                        "gearbox": gearbox.text.strip() if gearbox else None,
-                        "production_year": production_year.text.strip() if production_year else None,
-                        "location": location,
-                        "publication_time": publication_time,
-                        "price": price.text.strip() if price else None,
-                    }
+                    image = offer.find("img")
+
+                    parsed_data = Offer(
+                        title=title.text.strip(),
+                        offer_url=offer_url["href"] if offer_url else None,
+                        description=description.text.strip() if description else None,
+                        mileage=mileage.text.strip() if mileage else None,
+                        fuel_type=fuel_type.text.strip() if fuel_type else None,
+                        gearbox=gearbox.text.strip() if gearbox else None,
+                        production_year=production_year.text.strip() if production_year else None,
+                        location=location,
+                        publication_time=publication_time,
+                        price=price.text.strip() if price else None,
+                        image_url=self._change_image_size(image.get("src"))
+                    )
                     logger.info(parsed_data)
                     self._parsed_data.append(parsed_data)
 
