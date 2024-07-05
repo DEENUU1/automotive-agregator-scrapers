@@ -13,11 +13,11 @@ class OLXScraper(ScraperStrategy):
         super().__init__()
         self.categories = {
             "osobowe": "https://www.olx.pl/api/v1/offers?offset=0&limit=40&category_id=84&filter_refiners=spell_checker&sl=18c34ade124x23bc10a5",
-            "motocykle": "https://www.olx.pl/api/v1/offers?offset=0&limit=40&category_id=81&filter_refiners=spell_checker&sl=18c34ade124x23bc10a5",
-            "dostawcze": "https://www.olx.pl/api/v1/offers?offset=0&limit=40&category_id=3558&filter_refiners=spell_checker&sl=18c34ade124x23bc10a5",
-            "ciezarowe": "https://www.olx.pl/api/v1/offers?offset=0&limit=40&category_id=3559&filter_refiners=spell_checker&sl=18c34ade124x23bc10a5",
-            "budowlane": "https://www.olx.pl/api/v1/offers?offset=0&limit=40&category_id=3560&filter_refiners=spell_checker&sl=18c34ade124x23bc10a5",
-            "przyczepy": "https://www.olx.pl/api/v1/offers?offset=0&limit=40&category_id=3561&filter_refiners=spell_checker&sl=18c34ade124x23bc10a5"
+            # "motocykle-i-quady": "https://www.olx.pl/api/v1/offers?offset=0&limit=40&category_id=81&filter_refiners=spell_checker&sl=18c34ade124x23bc10a5",
+            # "dostawcze": "https://www.olx.pl/api/v1/offers?offset=0&limit=40&category_id=3558&filter_refiners=spell_checker&sl=18c34ade124x23bc10a5",
+            # "ciezarowe": "https://www.olx.pl/api/v1/offers?offset=0&limit=40&category_id=3559&filter_refiners=spell_checker&sl=18c34ade124x23bc10a5",
+            # "maszyny-budowlane": "https://www.olx.pl/api/v1/offers?offset=0&limit=40&category_id=3560&filter_refiners=spell_checker&sl=18c34ade124x23bc10a5",
+            # "przyczepy": "https://www.olx.pl/api/v1/offers?offset=0&limit=40&category_id=3561&filter_refiners=spell_checker&sl=18c34ade124x23bc10a5"
         }
         self.site_name = "olx"
 
@@ -49,5 +49,4 @@ class OLXScraper(ScraperStrategy):
                     raw_json=data,
                     created_at=datetime.utcnow().isoformat()
                 )
-                logger.info(raw)
                 asyncio.run(self.save_raw(raw.dict(by_alias=True)))

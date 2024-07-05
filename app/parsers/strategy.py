@@ -19,4 +19,4 @@ class Context:
         self._strategy = strategy
 
     def run_strategy(self, data: Raw):
-        self._strategy.run(data)
+        return self._strategy.run(data)

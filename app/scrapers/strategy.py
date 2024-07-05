@@ -22,4 +22,4 @@ class Context:
         self._strategy = strategy
 
     def run_strategy(self):
-        self._strategy.run()
+        return self._strategy.run()

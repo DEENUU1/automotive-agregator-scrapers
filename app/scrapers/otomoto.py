@@ -15,17 +15,18 @@ class OtomotoScraper(ScraperStrategy):
         super().__init__()
         self.categories = [
             "osobowe",
-            "motocykle-i-quady",
-            "dostawcze",
-            "ciezarowe",
-            "maszyny-budowlane",
-            "przyczepy",
-            "maszyny-rolnicze"
+            # "motocykle-i-quady",
+            # "dostawcze",
+            # "ciezarowe",
+            # "maszyny-budowlane",
+            # "przyczepy",
+            # "maszyny-rolnicze"
         ]
         self.base_url = "https://www.otomoto.pl/"
         self.site_name = "otomoto"
         self.next_page = True
         self.page_number = 1
+        self.max_page = 50
 
     @staticmethod
     def is_next_page(data: str) -> bool:
@@ -45,6 +46,9 @@ class OtomotoScraper(ScraperStrategy):
             while self.next_page:
                 url = f"{self.base_url}{category}?search[order]=created_at_first%3Adesc&page={self.page_number}"
                 logger.info(f"Scraping {url}")
+
+                if self.page_number > self.max_page:
+                    break
 
                 try:
                     response = requests.get(url)
