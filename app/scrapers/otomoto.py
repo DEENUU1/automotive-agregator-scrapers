@@ -50,7 +50,7 @@ class OtomotoScraper(ScraperStrategy):
                     response = requests.get(url)
                 except Exception as e:
                     logger.error(f"Error fetching {url}: {e}")
-                    return
+                    continue
 
                 self.next_page = self.is_next_page(response.text)
                 self.page_number += 1
