@@ -2,7 +2,9 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Scraper and Parser Stats</title>
+    <title>Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="{{ url_for('static', path='js/toogleView.js') }}"></script>
     <link rel="stylesheet" href="{{ url_for('static', path='css/root.css') }}" type="text/css"/>
 </head>
@@ -11,67 +13,173 @@
 <button onclick="toggleView('scraper')">Scraper stats</button>
 <button onclick="toggleView('parser')">Parser stats</button>
 
-
 <div id="scraperView">
-    <h2>Scraper stats</h2>
+    <h2>Scraper Stats</h2>
 
     <div class="stats-container">
         <div class="stat-card">
-            <div class="stat-name">Longest scraper runtime</div>
-            <div class="stat-value">{{scraper_longest_run_time}}</span></div>
+            <div class="stat-title">Longest scraper runtime</div>
+            <div class="stat-value">{{scraper_longest_run_time}}</div>
         </div>
         <div class="stat-card">
-            <div class="stat-name">Average scraper runtime</div>
+            <div class="stat-title">Average scraper runtime</div>
             <div class="stat-value">{{scraper_average_run_time}}</div>
         </div>
         <div class="stat-card">
-            <div class="stat-name">Average pages by scraper</div>
-            {% for key, value in scraper_avg_pages_per_scraper.items() %}
-            <div class="stat-value">
-                <span>{{key}}</span>
-                <span>- {{value}}</span>
-            </div>
-            {% endfor %}
+            <div class="stat-title">Most visited pages</div>
+            <div class="stat-value">{{scraper_most_page_visited}}</div>
         </div>
-        <div class="stat-card">
-            <div class="stat-name">Total runs per scraper</div>
-            {% for key, value in scraper_total_runs_per_scraper.items() %}
-            <div class="stat-value">
-                <span>{{key}}</span>
-                <span>- {{value}}</span>
+        <div class="stat-card last-run-card">
+            <div class="stat-title">Last scraper run: {{scraper_last.scraper_name}}</div>
+            <div class="last-run-details">
+                <div><strong>Start:</strong> {{scraper_last.run_date}}</div>
+                <div><strong>End:</strong> {{scraper_last.end_date}}</div>
+                <div><strong>Total time:</strong> {{scraper_last.total_time}}</div>
+                <div><strong>Visited pages:</strong> {{scraper_last.visited_pages}}</div>
             </div>
-            {% endfor %}
         </div>
     </div>
 
-    {{scraper_most_page_visited}}
-    <br><br>
-    {{scraper_all}}
-    <br><br>
-    {{scraper_last}}
-    <br><br>
+    <div class="list-container">
+        <div class="list-title">Average pages by scraper</div>
+        {% for key, value in scraper_avg_pages_per_scraper.items() %}
+        <div class="list-item">
+            <span>{{key}}</span>
+            <span>{{value}}</span>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="list-container">
+        <div class="list-title">Total runs per scraper</div>
+        {% for key, value in scraper_total_runs_per_scraper.items() %}
+        <div class="list-item">
+            <span>{{key}}</span>
+            <span>{{value}}</span>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="chart-container">
+        <canvas id="lineChart"></canvas>
+    </div>
 </div>
 
 <div id="parserView" class="hidden">
     <h2>Parser stats</h2>
+
     <div class="stats-container">
         <div class="stat-card">
-            <div class="stat-name">Longest parser runtime</div>
-            <div class="stat-value">{{parser_longest_run_time}}</span></div>
+            <div class="stat-title">Longest parser runtime</div>
+            <div class="stat-value">{{parser_longest_run_time}}</div>
         </div>
         <div class="stat-card">
-            <div class="stat-name">Average parser runtime</div>
+            <div class="stat-title">Average parser runtime</div>
             <div class="stat-value">{{parser_average_run_time}}</div>
+        </div>
+        <div class="stat-card last-run-card">
+            <div class="stat-title">Last scraper run: {{parser_last.parser_name}}</div>
+            <div class="last-run-details">
+                <div><strong>Start:</strong> {{parser_last.run_date}}</div>
+                <div><strong>End:</strong> {{parser_last.end_date}}</div>
+                <div><strong>Total time:</strong> {{parser_last.total_time}}</div>
+                <div><strong>Parsed elements:</strong> {{parser_last.parsed_elements}}</div>
+                <div><strong>Saved elements:</strong> {{parser_last.saved_elements}}</div>
+            </div>
         </div>
     </div>
 
-    {{parser_total_runs_per_parser}}
-    <br><br>
-    {{parser_all}}
-    <br><br>
-    {{parser_last}}
-    <br><br>
+    <div class="list-container">
+        <div class="list-title">Average pages by scraper</div>
+        {% for key, value in scraper_avg_pages_per_scraper.items() %}
+        <div class="list-item">
+            <span>{{key}}</span>
+            <span>{{value}}</span>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="list-container">
+        <div class="list-title">Total runs per parser</div>
+        {% for key, value in parser_total_runs_per_parser.items() %}
+        <div class="list-item">
+            <span>{{key}}</span>
+            <span>{{value}}</span>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="chart-container">
+        <canvas id="lineChart2"></canvas>
+    </div>
 </div>
+
+
+<script>
+var ctx = document.getElementById('lineChart').getContext('2d');
+var chart = new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: [{% for key, value in scraper_all.items() %}'{{ value.run_date }}'{% if not loop.last %}, {% endif %}{% endfor %}],
+        datasets: [{
+            label: 'Total Time',
+            data: [{% for key, value in scraper_all.items() %}{{ value.total_time }}{% if not loop.last %}, {% endif %}{% endfor %}],
+            borderColor: 'rgb(75, 192, 192)',
+            tension: 0.1
+        }]
+    },
+    options: {
+        responsive: true,
+        scales: {
+            x: {
+                title: {
+                    display: true,
+                    text: 'Run Date'
+                }
+            },
+            y: {
+                title: {
+                    display: true,
+                    text: 'Total Time'
+                }
+            }
+        }
+    }
+})
+</script>
+
+<script>
+var ctx = document.getElementById('lineChart2').getContext('2d');
+var chart = new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: [{% for key, value in parser_all.items() %}'{{ value.run_date }}'{% if not loop.last %}, {% endif %}{% endfor %}],
+        datasets: [{
+            label: 'Total Time',
+            data: [{% for key, value in parser_all.items() %}{{ value.saved_elements }}{% if not loop.last %}, {% endif %}{% endfor %}],
+            borderColor: 'rgb(75, 192, 192)',
+            tension: 0.1
+        }]
+    },
+    options: {
+        responsive: true,
+        scales: {
+            x: {
+                title: {
+                    display: true,
+                    text: 'Run Date'
+                }
+            },
+            y: {
+                title: {
+                    display: true,
+                    text: 'Saved elements'
+                }
+            }
+        }
+    }
+})
+</script>
 
 </body>
 </html>
