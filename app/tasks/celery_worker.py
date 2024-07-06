@@ -6,6 +6,7 @@ from celery import Celery
 # from celery.schedules import crontab
 
 from config.config import settings
+from exporter.api import save_offers_by_api
 from models.statistics import ScraperStatistic, ParserStatistic
 from parsers.olx import OLXParser
 from parsers.otomoto import OtomotoParser
@@ -80,7 +81,7 @@ def task_parsers() -> None:
         logger.info(f"Parsing {idx + 1} / {len(raw_data)}")
 
         if raw.site == "otomoto":
-            class_ = ParserContext(OtomotoParser())
+            class_ = OtomotoParser()
 
         elif raw.site == "olx":
             class_ = OLXParser()
@@ -91,7 +92,14 @@ def task_parsers() -> None:
 
         start, run_date = time.time(), datetime.now()
 
+        if not class_:
+            continue
+
         data = ParserContext(class_).run_strategy(raw)
+        if not data:
+            continue
+
+        save_offers_by_api(data)
 
         end, end_date = time.time(), datetime.now()
 
@@ -100,7 +108,7 @@ def task_parsers() -> None:
             parser_name=class_.__class__.__name__,
             run_date=str(run_date),
             end_date=str(end_date),
-            parsed_elements=len(data),
+            parsed_elements=len(data) if data else 0,
             saved_elements=0,  # TODO update this value
             run_id=run_id
         )
