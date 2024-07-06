@@ -3,17 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <title>Scraper and Parser Stats</title>
-    <style>
-        .hidden {
-            display: none;
-        }
-    </style>
     <script src="{{ url_for('static', path='js/toogleView.js') }}"></script>
+    <link rel="stylesheet" href="{{ url_for('static', path='css/root.css') }}" type="text/css"/>
 </head>
 <body>
 
 <button onclick="toggleView('scraper')">Scraper stats</button>
 <button onclick="toggleView('parser')">Parser stats</button>
+
+
 
 <div id="scraperView">
     <h2>Scraper stats</h2>
