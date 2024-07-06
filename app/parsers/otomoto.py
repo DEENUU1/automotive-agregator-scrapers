@@ -136,6 +136,7 @@ class OtomotoParser(ParserStrategy):
                         price=price_obj,
                         image_url=self._change_image_size(image.get("src")) if image else None,
                         category=data.category,
+                        source="otomoto"
                     )
                     self._parsed_data.append(parsed_data)
 

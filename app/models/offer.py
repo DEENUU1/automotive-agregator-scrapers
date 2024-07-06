@@ -33,3 +33,4 @@ class Offer(BaseModel):
     condition: Optional[str] = None
     drive: Optional[str] = None
     vin: Optional[str] = None
+    source: str = None

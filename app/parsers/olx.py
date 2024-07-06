@@ -125,7 +125,8 @@ class OLXParser(ParserStrategy):
                     color=color,
                     condition=condition,
                     drive=drive,
-                    vin=vin
+                    vin=vin,
+                    source="olx",
                 )
                 self._parsed_data.append(offer)
 
