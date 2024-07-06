@@ -20,7 +20,7 @@ class ParserStatistic(BaseModel):
     id: PyObjectId = Field(default_factory=PyObjectId, alias='_id')
     run_date: str
     end_date: str
-    input_elements: int
+    total_time: float
     parsed_elements: int
     saved_elements: int
     parser_name: str

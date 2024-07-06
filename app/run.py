@@ -45,9 +45,6 @@ if __name__ == '__main__':
 
         logger.info('Stopping the scraper')
 
-
-    _run_scrapers()
-
     def _run_parsers() -> None:
         logger.info("Start parsing")
 
@@ -57,17 +54,33 @@ if __name__ == '__main__':
             logger.info(f"Parsing {idx + 1} / {len(raw_data)}")
 
             if raw.site == "otomoto":
-                context = ParserContext(OtomotoParser())
-                context.run_strategy(raw)
+                class_ = ParserContext(OtomotoParser())
 
             elif raw.site == "olx":
-                context = ParserContext(OLXParser())
-                context.run_strategy(raw)
+                class_ = (OLXParser())
 
             else:
                 logger.info("No scraper for this site")
                 continue
 
-            delete_raw_by_id(str(raw.id))
+            start, run_date = time.time(), datetime.now()
+
+            data = ParserContext(class_).run_strategy(raw)
+
+            end, end_date = time.time(), datetime.now()
+
+            parser_statistic = ParserStatistic(
+                total_time=end - start,
+                parser_name=class_.__class__.__name__,
+                run_date=str(run_date),
+                end_date=str(end_date),
+                parsed_elements=len(data),
+                saved_elements=0  # TODO update this value
+            )
+            asyncio.run(create_parser_statistic_object(parser_statistic.dict(by_alias=True)))
+            asyncio.run(delete_raw_by_id(str(raw.id)))
 
         logger.info("End parsing")
+
+
+    _run_parsers()
