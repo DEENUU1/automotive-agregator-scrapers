@@ -12,17 +12,38 @@
 <button onclick="toggleView('parser')">Parser stats</button>
 
 
-
 <div id="scraperView">
     <h2>Scraper stats</h2>
-    {{scraper_avg_pages_per_scraper}}
-    <br><br>
-    {{scraper_total_runs_per_scraper}}
-    <br><br>
-    {{scraper_longest_run_time}}
-    <br><br>
-    {{scraper_average_run_time}}
-    <br><br>
+
+    <div class="stats-container">
+        <div class="stat-card">
+            <div class="stat-name">Longest scraper runtime</div>
+            <div class="stat-value">{{scraper_longest_run_time}}</span></div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-name">Average scraper runtime</div>
+            <div class="stat-value">{{scraper_average_run_time}}</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-name">Average pages by scraper</div>
+            {% for key, value in scraper_avg_pages_per_scraper.items() %}
+            <div class="stat-value">
+                <span>{{key}}</span>
+                <span>- {{value}}</span>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="stat-card">
+            <div class="stat-name">Total runs per scraper</div>
+            {% for key, value in scraper_total_runs_per_scraper.items() %}
+            <div class="stat-value">
+                <span>{{key}}</span>
+                <span>- {{value}}</span>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
     {{scraper_most_page_visited}}
     <br><br>
     {{scraper_all}}
@@ -33,11 +54,18 @@
 
 <div id="parserView" class="hidden">
     <h2>Parser stats</h2>
+    <div class="stats-container">
+        <div class="stat-card">
+            <div class="stat-name">Longest parser runtime</div>
+            <div class="stat-value">{{parser_longest_run_time}}</span></div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-name">Average parser runtime</div>
+            <div class="stat-value">{{parser_average_run_time}}</div>
+        </div>
+    </div>
+
     {{parser_total_runs_per_parser}}
-    <br><br>
-    {{parser_longest_run_time}}
-    <br><br>
-    {{parser_average_run_time}}
     <br><br>
     {{parser_all}}
     <br><br>

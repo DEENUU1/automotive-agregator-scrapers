@@ -81,13 +81,13 @@ class ScraperAnalytics:
                 run_counts[stat.scraper_name] = 1
         return run_counts
 
-    def longest_run_time(self) -> ScraperStatistic:
-        return max(self._data, key=lambda stat: stat.total_time)
+    def longest_run_time(self) -> float:
+        return round(max(self._data, key=lambda stat: stat.total_time).total_time, 2)
 
     def average_run_time(self) -> float:
         total_time = sum(stat.total_time for stat in self._data)
         num_runs = len(self._data)
-        return total_time / num_runs if num_runs > 0 else 0
+        return round(total_time / num_runs if num_runs > 0 else 0, 2)
 
     def most_pages_visited(self) -> ScraperStatistic:
         return max(self._data, key=lambda stat: stat.visited_pages)
@@ -122,13 +122,13 @@ class ParserAnalytics:
                 run_counts[stat.parser_name] = 1
         return run_counts
 
-    def longest_run_time(self) -> ParserStatistic:
-        return max(self._data, key=lambda stat: stat.total_time)
+    def longest_run_time(self) -> float:
+        return round(max(self._data, key=lambda stat: stat.total_time).total_time, 2)
 
     def average_run_time(self) -> float:
         total_time = sum(stat.total_time for stat in self._data)
         num_runs = len(self._data)
-        return total_time / num_runs if num_runs > 0 else 0
+        return round(total_time / num_runs if num_runs > 0 else 0, 2)
 
     def sum_by_run_id(self) -> Dict[str, Dict[str, float]]:
         sums_by_run_id = {}

@@ -39,14 +39,14 @@ def root(request: Request):
 
         "scraper_avg_pages_per_scraper": scraper_analytics.average_pages_per_scraper(),
         "scraper_total_runs_per_scraper": scraper_analytics.total_runs_per_scraper(),
-        "scraper_longest_run_time": scraper_analytics.longest_run_time().total_time,
+        "scraper_longest_run_time": scraper_analytics.longest_run_time(),
         "scraper_average_run_time": scraper_analytics.average_run_time(),
         "scraper_most_page_visited": scraper_analytics.most_pages_visited(),
         "scraper_all": scraper_analytics.sum_by_run_id(),
         "scraper_last": scraper_analytics.get_last_run(),
 
         "parser_total_runs_per_parser": parser_analytics.total_runs_per_parser(),
-        "parser_longest_run_time": parser_analytics.longest_run_time().total_time,
+        "parser_longest_run_time": parser_analytics.longest_run_time(),
         "parser_average_run_time": parser_analytics.average_run_time(),
         "parser_all": parser_analytics.sum_by_run_id(),
         "parser_last": parser_analytics.get_last_run(),
