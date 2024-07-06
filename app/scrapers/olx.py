@@ -20,6 +20,7 @@ class OLXScraper(ScraperStrategy):
             # "przyczepy": "https://www.olx.pl/api/v1/offers?offset=0&limit=40&category_id=3561&filter_refiners=spell_checker&sl=18c34ade124x23bc10a5"
         }
         self.site_name = "olx"
+        self.total_pages = 0
 
     def run(self):
 
@@ -49,4 +50,7 @@ class OLXScraper(ScraperStrategy):
                     raw_json=data,
                     created_at=datetime.utcnow().isoformat()
                 )
+                self.total_pages += 1
                 asyncio.run(self.save_raw(raw.dict(by_alias=True)))
+
+        return self.total_pages

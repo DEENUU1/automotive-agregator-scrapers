@@ -26,6 +26,7 @@ class OtomotoScraper(ScraperStrategy):
         self.site_name = "otomoto"
         self.next_page = True
         self.page_number = 1
+        self.total_pages = 0
         self.max_page = 50
 
     @staticmethod
@@ -40,9 +41,12 @@ class OtomotoScraper(ScraperStrategy):
             logger.error(f"Error parsing HTML: {e}")
             return False
 
-    def run(self):
+    def run(self) -> int:
 
         for category in self.categories:
+            self.next_page = True
+            self.page_number = 1
+
             while self.next_page:
                 url = f"{self.base_url}{category}?search[order]=created_at_first%3Adesc&page={self.page_number}"
                 logger.info(f"Scraping {url}")
@@ -58,6 +62,7 @@ class OtomotoScraper(ScraperStrategy):
 
                 self.next_page = self.is_next_page(response.text)
                 self.page_number += 1
+                self.total_pages += 1
 
                 raw = Raw(
                     category=category,
@@ -67,3 +72,5 @@ class OtomotoScraper(ScraperStrategy):
                 )
 
                 asyncio.run(self.save_raw(raw.dict(by_alias=True)))
+
+        return self.total_pages
