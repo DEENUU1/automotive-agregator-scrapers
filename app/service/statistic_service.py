@@ -1,4 +1,4 @@
-from bson import ObjectId
+import asyncio
 from pydantic import ValidationError
 
 from config.database import get_collection
@@ -28,6 +28,13 @@ async def create_scraper_statistic_object(data: Dict) -> Union[ScraperStatistic,
     return None
 
 
+async def get_all_scraper_statistic_objects() -> List[ScraperStatistic]:
+    collection = await get_collection(SCRAPER_COLLECTION_NAME)
+    cursor = collection.find()
+    documents = await cursor.to_list(length=None)
+    return [ScraperStatistic(**doc) for doc in documents]
+
+
 async def create_parser_statistic_object(data: Dict) -> Union[ParserStatistic, None]:
     try:
         document = ParserStatistic(**data)
@@ -41,3 +48,101 @@ async def create_parser_statistic_object(data: Dict) -> Union[ParserStatistic, N
         created_document = await collection.find_one({"_id": result.inserted_id})
         return ParserStatistic(**created_document)
     return None
+
+
+async def get_all_parser_statistic_objects() -> List[ParserStatistic]:
+    collection = await get_collection(PARSER_COLLECTION_NAME)
+    documents = await collection.find().to_list(length=None)
+    return [ParserStatistic(**doc) for doc in documents]
+
+
+class ScraperAnalytics:
+
+    def __init__(self):
+        self._data = asyncio.run(get_all_scraper_statistic_objects())
+
+    def average_pages_per_scraper(self) -> Dict[str, float]:
+        page_counts, run_counts = {}, {}
+        for stat in self._data:
+            if stat.scraper_name in page_counts:
+                page_counts[stat.scraper_name] += stat.visited_pages
+                run_counts[stat.scraper_name] += 1
+            else:
+                page_counts[stat.scraper_name] = stat.visited_pages
+                run_counts[stat.scraper_name] = 1
+        return {scraper: page_counts[scraper] / run_counts[scraper] for scraper in page_counts}
+
+    def total_runs_per_scraper(self) -> Dict[str, int]:
+        run_counts = {}
+        for stat in self._data:
+            if stat.scraper_name in run_counts:
+                run_counts[stat.scraper_name] += 1
+            else:
+                run_counts[stat.scraper_name] = 1
+        return run_counts
+
+    def longest_run_time(self) -> ScraperStatistic:
+        return max(self._data, key=lambda stat: stat.total_time)
+
+    def average_run_time(self) -> float:
+        total_time = sum(stat.total_time for stat in self._data)
+        num_runs = len(self._data)
+        return total_time / num_runs if num_runs > 0 else 0
+
+    def most_pages_visited(self) -> ScraperStatistic:
+        return max(self._data, key=lambda stat: stat.visited_pages)
+
+    def sum_by_run_id(self) -> Dict[str, Dict[str, float]]:
+        sums_by_run_id = {}
+        for stat in self._data:
+            if stat.run_id not in sums_by_run_id:
+                sums_by_run_id[stat.run_id] = {
+                    "total_time": 0,
+                    "visited_pages": 0
+                }
+            sums_by_run_id[stat.run_id]["total_time"] += stat.total_time
+            sums_by_run_id[stat.run_id]["visited_pages"] += stat.visited_pages
+        return sums_by_run_id
+
+    def get_last_run(self) -> ScraperStatistic:
+        return max(self._data, key=lambda stat: stat.end_date)
+
+
+class ParserAnalytics:
+
+    def __init__(self):
+        self._data = asyncio.run(get_all_parser_statistic_objects())
+
+    def total_runs_per_parser(self) -> Dict[str, int]:
+        run_counts = {}
+        for stat in self._data:
+            if stat.parser_name in run_counts:
+                run_counts[stat.parser_name] += 1
+            else:
+                run_counts[stat.parser_name] = 1
+        return run_counts
+
+    def longest_run_time(self) -> ParserStatistic:
+        return max(self._data, key=lambda stat: stat.total_time)
+
+    def average_run_time(self) -> float:
+        total_time = sum(stat.total_time for stat in self._data)
+        num_runs = len(self._data)
+        return total_time / num_runs if num_runs > 0 else 0
+
+    def sum_by_run_id(self) -> Dict[str, Dict[str, float]]:
+        sums_by_run_id = {}
+        for stat in self._data:
+            if stat.run_id not in sums_by_run_id:
+                sums_by_run_id[stat.run_id] = {
+                    "total_time": 0,
+                    "parsed_elements": 0,
+                    "saved_elements": 0
+                }
+            sums_by_run_id[stat.run_id]["total_time"] += stat.total_time
+            sums_by_run_id[stat.run_id]["parsed_elements"] += stat.parsed_elements
+            sums_by_run_id[stat.run_id]["saved_elements"] += stat.saved_elements
+        return sums_by_run_id
+
+    def get_last_run(self) -> ParserStatistic:
+        return max(self._data, key=lambda stat: stat.end_date)

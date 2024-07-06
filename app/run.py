@@ -12,6 +12,7 @@ from parsers.olx import OLXParser
 from service.statistic_service import create_parser_statistic_object, create_scraper_statistic_object
 from models.statistics import ScraperStatistic, ParserStatistic
 import time
+from utils import get_hashed_run_id
 
 logging.basicConfig(
     level=logging.INFO,
@@ -21,6 +22,7 @@ logger = logging.getLogger(__name__)
 
 if __name__ == '__main__':
     def _run_scrapers() -> None:
+        run_id = get_hashed_run_id()
 
         logger.info('Starting the scraper')
         scrapers = [OLXScraper()]  # OtomotoScraper(),
@@ -38,7 +40,8 @@ if __name__ == '__main__':
                 scraper_name=scraper.__class__.__name__,
                 run_date=str(run_date),
                 end_date=str(end_date),
-                visited_pages=total_page
+                visited_pages=total_page,
+                run_id=run_id
             )
 
             asyncio.run(create_scraper_statistic_object(scraper_statistic.dict(by_alias=True)))
@@ -46,24 +49,30 @@ if __name__ == '__main__':
         logger.info('Stopping the scraper')
 
     def _run_parsers() -> None:
+        run_id = get_hashed_run_id()
+
         logger.info("Start parsing")
 
         raw_data = asyncio.run(get_raw_list())
 
         for idx, raw in enumerate(raw_data):
+            class_ = None
             logger.info(f"Parsing {idx + 1} / {len(raw_data)}")
 
             if raw.site == "otomoto":
-                class_ = ParserContext(OtomotoParser())
+                class_ = OtomotoParser()
 
             elif raw.site == "olx":
-                class_ = (OLXParser())
+                class_ = OLXParser()
 
             else:
                 logger.info("No scraper for this site")
                 continue
 
             start, run_date = time.time(), datetime.now()
+
+            if not class_:
+                continue
 
             data = ParserContext(class_).run_strategy(raw)
 
@@ -74,13 +83,14 @@ if __name__ == '__main__':
                 parser_name=class_.__class__.__name__,
                 run_date=str(run_date),
                 end_date=str(end_date),
-                parsed_elements=len(data),
-                saved_elements=0  # TODO update this value
+                parsed_elements=len(data) if data else 0,
+                saved_elements=0,  # TODO update this value
+                run_id=run_id
             )
             asyncio.run(create_parser_statistic_object(parser_statistic.dict(by_alias=True)))
             asyncio.run(delete_raw_by_id(str(raw.id)))
 
         logger.info("End parsing")
 
-
-    _run_parsers()
+    _run_scrapers()
+    # _run_parsers()

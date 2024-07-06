@@ -15,7 +15,7 @@ from scrapers.strategy import Context as ScraperContext
 from service.raw_service import get_raw_list, delete_raw_by_id
 from parsers.strategy import Context as ParserContext
 import time
-
+from utils import get_hashed_run_id
 from service.statistic_service import create_scraper_statistic_object, create_parser_statistic_object
 
 logger = logging.getLogger(__name__)
@@ -41,6 +41,8 @@ celery_app.conf.update(
 
 @celery_app.task(name="task_scrapers")
 def task_scrapers() -> None:
+    run_id = get_hashed_run_id()
+
     logger.info('Starting the scraper')
     scrapers = [OLXScraper()]  # OtomotoScraper(),
 
@@ -57,7 +59,8 @@ def task_scrapers() -> None:
             scraper_name=scraper.__class__.__name__,
             run_date=str(run_date),
             end_date=str(end_date),
-            visited_pages=total_page
+            visited_pages=total_page,
+            run_id=run_id
         )
 
         asyncio.run(create_scraper_statistic_object(scraper_statistic.dict(by_alias=True)))
@@ -67,6 +70,8 @@ def task_scrapers() -> None:
 
 @celery_app.task(name="task_parsers")
 def task_parsers() -> None:
+    run_id = get_hashed_run_id()
+
     logger.info("Start parsing")
 
     raw_data = asyncio.run(get_raw_list())
@@ -78,7 +83,7 @@ def task_parsers() -> None:
             class_ = ParserContext(OtomotoParser())
 
         elif raw.site == "olx":
-            class_ = (OLXParser())
+            class_ = OLXParser()
 
         else:
             logger.info("No scraper for this site")
@@ -96,7 +101,8 @@ def task_parsers() -> None:
             run_date=str(run_date),
             end_date=str(end_date),
             parsed_elements=len(data),
-            saved_elements=0  # TODO update this value
+            saved_elements=0,  # TODO update this value
+            run_id=run_id
         )
         asyncio.run(create_parser_statistic_object(parser_statistic.dict(by_alias=True)))
         asyncio.run(delete_raw_by_id(str(raw.id)))

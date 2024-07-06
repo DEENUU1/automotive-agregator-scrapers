@@ -10,6 +10,7 @@ class ScraperStatistic(BaseModel):
     total_time: float
     visited_pages: int
     scraper_name: str
+    run_id: str
 
     class Config(BaseConfig):
         json_encoders = {ObjectId: str}
@@ -24,6 +25,7 @@ class ParserStatistic(BaseModel):
     parsed_elements: int
     saved_elements: int
     parser_name: str
+    run_id: str
 
     class Config(BaseConfig):
         json_encoders = {ObjectId: str}
