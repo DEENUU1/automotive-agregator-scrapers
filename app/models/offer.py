@@ -24,7 +24,7 @@ class Offer(BaseModel):
     location: Optional[Location] = None
     publication_time: Optional[str] = None
     price: Optional[Price] = None
-    images: Optional[List[str]] = None
+    image_url: Optional[str] = None
     category: Optional[str] = None
     engine_size: Optional[int] = None
     engine_power: Optional[int] = None

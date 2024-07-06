@@ -1,5 +1,6 @@
 from datetime import datetime
 
+from exporter.api import save_offers_by_api
 from scrapers.olx import OLXScraper
 from scrapers.otomoto import OtomotoScraper
 from scrapers.strategy import Context as ScraperContext
@@ -56,7 +57,6 @@ if __name__ == '__main__':
         raw_data = asyncio.run(get_raw_list())
 
         for idx, raw in enumerate(raw_data):
-            class_ = None
             logger.info(f"Parsing {idx + 1} / {len(raw_data)}")
 
             if raw.site == "otomoto":
@@ -75,6 +75,10 @@ if __name__ == '__main__':
                 continue
 
             data = ParserContext(class_).run_strategy(raw)
+            if not data:
+                continue
+
+            save_offers_by_api(data)
 
             end, end_date = time.time(), datetime.now()
 
@@ -92,5 +96,5 @@ if __name__ == '__main__':
 
         logger.info("End parsing")
 
-    _run_scrapers()
-    # _run_parsers()
+    # _run_scrapers()
+    _run_parsers()

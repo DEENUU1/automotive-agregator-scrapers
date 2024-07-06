@@ -134,7 +134,7 @@ class OtomotoParser(ParserStrategy):
                         production_year=int(production_year.text.strip()) if production_year else None,
                         location=self._parse_location(location),
                         price=price_obj,
-                        images=[self._change_image_size(image.get("src"))] if image else None,
+                        image_url=self._change_image_size(image.get("src")) if image else None,
                         category=data.category,
                     )
                     self._parsed_data.append(parsed_data)

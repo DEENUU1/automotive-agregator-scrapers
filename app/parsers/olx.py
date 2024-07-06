@@ -117,7 +117,7 @@ class OLXParser(ParserStrategy):
                     location=location_obj,
                     publication_time=self._parse_publication_time(created_time),
                     price=price_obj,
-                    images=image_urls,
+                    image_url=image_urls[0],
                     category=data.category,
                     engine_size=int(engine_size) if engine_size else None,
                     engine_power=int(engine_power) if engine_power else None,
