@@ -553,3 +553,11 @@ video {
   --tw-contain-paint:  ;
   --tw-contain-style:  ;
 }
+
+.static {
+  position: static;
+}
+
+.hidden {
+  display: none;
+}

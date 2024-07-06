@@ -2,39 +2,50 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Scraper and Parser Stats</title>
+    <style>
+        .hidden {
+            display: none;
+        }
+    </style>
+    <script src="{{ url_for('static', path='js/toogleView.js') }}"></script>
 </head>
 <body>
 
-<h2>Scraper stats</h2>
+<button onclick="toggleView('scraper')">Scraper stats</button>
+<button onclick="toggleView('parser')">Parser stats</button>
 
-{{scraper_avg_pages_per_scraper}}
-<br><br>
-{{scraper_total_runs_per_scraper}}
-<br><br>
-{{scraper_longest_run_time}}
-<br><br>
-{{scraper_average_run_time}}
-<br><br>
-{{scraper_most_page_visited}}
-<br><br>
-{{scraper_all}}
-<br><br>
-{{scraper_last}}
-<br><br>
+<div id="scraperView">
+    <h2>Scraper stats</h2>
+    {{scraper_avg_pages_per_scraper}}
+    <br><br>
+    {{scraper_total_runs_per_scraper}}
+    <br><br>
+    {{scraper_longest_run_time}}
+    <br><br>
+    {{scraper_average_run_time}}
+    <br><br>
+    {{scraper_most_page_visited}}
+    <br><br>
+    {{scraper_all}}
+    <br><br>
+    {{scraper_last}}
+    <br><br>
+</div>
 
-<h2>Parser stats</h2>
-{{parser_total_runs_per_parser}}
-<br><br>
-{{parser_longest_run_time}}
-<br><br>
-{{parser_average_run_time}}
-<br><br>
-{{parser_all}}
-<br><br>
-{{parser_last}}
-<br><br>
-
+<div id="parserView" class="hidden">
+    <h2>Parser stats</h2>
+    {{parser_total_runs_per_parser}}
+    <br><br>
+    {{parser_longest_run_time}}
+    <br><br>
+    {{parser_average_run_time}}
+    <br><br>
+    {{parser_all}}
+    <br><br>
+    {{parser_last}}
+    <br><br>
+</div>
 
 </body>
 </html>
