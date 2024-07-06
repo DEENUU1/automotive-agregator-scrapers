@@ -155,4 +155,13 @@ class ParserAnalytics:
         return sums_by_run_id
 
     def get_last_run(self) -> ParserStatistic:
-        return max(self._data, key=lambda stat: stat.end_date)
+        obj = max(self._data, key=lambda stat: stat.end_date)
+        return ParserStatistic(
+            run_date=obj.run_date[:10],
+            end_date=obj.end_date[:10],
+            total_time=round(obj.total_time, 2),
+            parsed_elements=obj.parsed_elements,
+            saved_elements=obj.saved_elements,
+            parser_name=obj.parser_name,
+            run_id=obj.run_id
+        )
