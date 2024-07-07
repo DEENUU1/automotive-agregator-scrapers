@@ -19,7 +19,7 @@ services:
     redis:
         image: redis:latest
         ports:
-            - "6379:6379"
+            - "6380:6380"
 
     celery_worker:
         container_name: "automotive_scraper_celery_worker"
