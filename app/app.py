@@ -6,7 +6,7 @@ from config.config import settings
 import logging
 
 from fastapi.templating import Jinja2Templates
-
+from tasks.celery_worker import task_scrapers, task_parsers
 from service.statistic_service import ScraperAnalytics, ParserAnalytics
 
 logging.basicConfig(
@@ -14,7 +14,6 @@ logging.basicConfig(
     format='%(asctime)s - %(levelname)s - %(message)s'
 )
 logger = logging.getLogger(__name__)
-
 
 app = FastAPI(
     debug=settings.DEBUG,
@@ -56,3 +55,15 @@ def root(request: Request):
         "root.html",
         context=context
     )
+
+
+@app.get("/task/scraper")
+async def run_scrape_task(request: Request):
+    task_scrapers.delay()
+    return {"status": "OK"}
+
+
+@app.get("/task/parser")
+async def run_parser_task(request: Request):
+    task_parsers.delay()
+    return {"status": "OK"}

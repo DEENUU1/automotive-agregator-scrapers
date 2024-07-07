@@ -13,6 +13,8 @@
     <div class="button-container">
         <button id="scraperButton" class="active" onclick="toggleView('scraper')">Scraper stats</button>
         <button id="parserButton" onclick="toggleView('parser')">Parser stats</button>
+        <button id="runScraperTaskButton" onclick="runScraperTask()">Run Scraper Task</button>
+        <button id="runParserTaskButton" onclick="runParserTask()">Run Parser Task</button>
     </div>
     <div id="scraperView">
         <h2>Scraper Stats</h2>
@@ -116,26 +118,54 @@
     </div>
 
 <script>
-    var scraperData = [
-        {% for key, value in scraper_all.items() %}
-            {
-                run_date: '{{ value.run_date }}',
-                total_time: {{ value.total_time }}
-            }{% if not loop.last %},{% endif %}
-        {% endfor %}
-    ];
+        async function runScraperTask() {
+            try {
+                let response = await fetch('/task/scraper', { method: 'GET' });
+                let data = await response.json();
+                if (data.status === 'OK') {
+                    alert('Scraper task started successfully!');
+                } else {
+                    alert('Failed to start scraper task.');
+                }
+            } catch (error) {
+                alert('Error starting scraper task: ' + error);
+            }
+        }
 
-    var parserData = [
-        {% for key, value in parser_all.items() %}
-            {
-                run_date: '{{ value.run_date }}',
-                saved_elements: {{ value.saved_elements }}
-            }{% if not loop.last %},{% endif %}
-        {% endfor %}
-    ];
+        async function runParserTask() {
+            try {
+                let response = await fetch('/task/parser', { method: 'GET' });
+                let data = await response.json();
+                if (data.status === 'OK') {
+                    alert('Parser task started successfully!');
+                } else {
+                    alert('Failed to start parser task.');
+                }
+            } catch (error) {
+                alert('Error starting parser task: ' + error);
+            }
+        }
 
-    createScraperChart(scraperData);
-    createParserChart(parserData);
-</script>
+        var scraperData = [
+            {% for key, value in scraper_all.items() %}
+                {
+                    run_date: '{{ value.run_date }}',
+                    total_time: {{ value.total_time }}
+                }{% if not loop.last %},{% endif %}
+            {% endfor %}
+        ];
+
+        var parserData = [
+            {% for key, value in parser_all.items() %}
+                {
+                    run_date: '{{ value.run_date }}',
+                    saved_elements: {{ value.saved_elements }}
+                }{% if not loop.last %},{% endif %}
+            {% endfor %}
+        ];
+
+        createScraperChart(scraperData);
+        createParserChart(parserData);
+    </script>
 </body>
 </html>
