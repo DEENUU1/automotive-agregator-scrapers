@@ -1,4 +1,4 @@
-name: Continuous Integration turned off
+name: Continuous Integration
 
 on:
   push:
@@ -12,14 +12,13 @@ concurrency:
 jobs:
   deploy:
     name: Deploy
-    if: false
     runs-on: ubuntu-latest
     steps:
       - name: Configure SSH
         env:
-          SSH_PRIVATE_KEY: ${{secrets.ID_RSA}}
-          SSH_HOST: ${{secrets.SSH_HOST}}
-          SSH_USER: ${{secrets.SSH_USER}}
+          SSH_PRIVATE_KEY: ${{ secrets.ID_RSA }}
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_USER: ${{ secrets.SSH_USER }}
         run: |
           mkdir -p ~/.ssh/
           echo "$SSH_PRIVATE_KEY" > ~/.ssh/github
