@@ -33,4 +33,4 @@ jobs:
           EOF
       - name: Run deploy
         run: |
-          ssh target "docker-compose down && git pull && docker-compose build && docker-compose up -d --force-recreate"
+          ssh target "docker compose down && git pull && docker compose build && docker compose up -d --force-recreate"
