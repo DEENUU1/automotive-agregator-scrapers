@@ -6,7 +6,7 @@ services:
         build:
             context: .
             dockerfile: Dockerfile
-        container_name: web
+        container_name: automotive-scraper-web
         command: uvicorn app:app --host 0.0.0.0 --port 8001
         volumes:
           - ./app:/app
@@ -31,7 +31,7 @@ services:
             - ./app:/app
         depends_on:
             - redis
-            - web
+            - automotive-scraper-web
         restart: always
         env_file:
             - .env
@@ -46,7 +46,7 @@ services:
             - ./app:/app
         depends_on:
             - redis
-            - web
+            - automotive-scraper-web
         restart: always
         env_file:
             - .env

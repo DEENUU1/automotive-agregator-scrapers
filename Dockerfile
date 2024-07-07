@@ -10,7 +10,6 @@ ENV PYTHONUNBUFFERED=1
 COPY requirements.txt .
 
 RUN pip install -r requirements.txt
-RUN pip install psycopg2
 
 RUN addgroup --system app && adduser --system --group app
 
