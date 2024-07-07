@@ -9,7 +9,7 @@ services:
         container_name: "automotive_scraper_web"
         command: uvicorn app:app --host 0.0.0.0 --port 8001
         volumes:
-          - ./app:/app
+            - ./app:/app
         ports:
             - "8001:8001"
         env_file:
