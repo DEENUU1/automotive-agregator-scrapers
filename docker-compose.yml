@@ -6,7 +6,7 @@ services:
         build:
             context: .
             dockerfile: Dockerfile
-        container_name: automotive-scraper-web
+        container_name: "automotive_scraper_web"
         command: uvicorn app:app --host 0.0.0.0 --port 8001
         volumes:
           - ./app:/app
@@ -22,7 +22,7 @@ services:
             - "6379:6379"
 
     celery_worker:
-        container_name: "celery_worker"
+        container_name: "automotive_scraper_celery_worker"
         build:
             context: .
             dockerfile: Dockerfile
@@ -31,13 +31,13 @@ services:
             - ./app:/app
         depends_on:
             - redis
-            - automotive-scraper-web
+            - web
         restart: always
         env_file:
             - .env
 
     celery_beat:
-        container_name: "celery_beat"
+        container_name: "automotive_scraper_celery_beat"
         build:
             context: .
             dockerfile: Dockerfile
@@ -46,7 +46,7 @@ services:
             - ./app:/app
         depends_on:
             - redis
-            - automotive-scraper-web
+            - web
         restart: always
         env_file:
             - .env
