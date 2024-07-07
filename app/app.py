@@ -60,10 +60,10 @@ def root(request: Request):
 @app.get("/task/scraper")
 async def run_scrape_task(request: Request):
     task_scrapers.delay()
-    return {"status": "OK"}
+    return {"status": "ok"}
 
 
 @app.get("/task/parser")
 async def run_parser_task(request: Request):
     task_parsers.delay()
-    return {"status": "OK"}
+    return {"status": "ok"}
