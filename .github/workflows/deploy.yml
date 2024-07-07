@@ -33,4 +33,4 @@ jobs:
           EOF
       - name: Run deploy
         run: |
-          ssh target "docker compose down && git pull && docker compose build && docker compose up -d --force-recreate"
+          ssh target "cd ./automotive-agregator-scrapers && docker compose down && git pull && docker compose build && docker compose up -d --force-recreate"
